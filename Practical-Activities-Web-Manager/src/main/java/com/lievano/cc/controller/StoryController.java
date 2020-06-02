@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.lievano.cc.delegate.StoryDelegate;
 import com.lievano.cc.exceptions.DuplicatedEntityException;
 import com.lievano.cc.exceptions.EntityNotExistException;
 import com.lievano.cc.exceptions.IlegalPriorityValueException;
@@ -20,30 +21,32 @@ import com.lievano.cc.exceptions.NotEnoughGroupsException;
 import com.lievano.cc.exceptions.NotEnoughSprintsException;
 import com.lievano.cc.exceptions.NullTopicException;
 import com.lievano.cc.model.TsscAcceptanceCriteria;
+import com.lievano.cc.model.TsscGame;
 import com.lievano.cc.model.TsscStory;
 import com.lievano.cc.service.StoryService;
 
 @Controller
 public class StoryController {
 
-	private StoryService storyService;
+	private StoryDelegate storyDelegate;
+	//private StoryService storyService;
 	
 	@Autowired
-	public StoryController(StoryService storyService) {
-		// TODO Auto-generated constructor stub
-		this.storyService=storyService;
+	public StoryController(StoryService storyService,StoryDelegate storyDelegate) {
+		this.storyDelegate=storyDelegate;
+		//this.storyService=storyService;
 	}
 	
 	
 	@GetMapping("/stories/")
 	public String indexStorires(Model model) {
-		model.addAttribute("stories",storyService.findAll());
+		model.addAttribute("stories",storyDelegate.findAll());
 		return("/stories/index");
 	}
 	
 	@GetMapping("/stories/list/{gameId}")
 	public String list(@PathVariable("gameId")long gameId,Model model) {
-		model.addAttribute("stories",storyService.findAllByTsscGameId(gameId));
+		model.addAttribute("stories",storyDelegate.findByGameid(gameId));
 		model.addAttribute("gameId",gameId);
 		return"/stories/list";
 	}
@@ -64,14 +67,12 @@ public class StoryController {
 				return"/stories/add-story-topic";
 			}else {
 				
-				try {
-					storyService.saveStory(tsscStory, gameId);
-				} catch (NotEnoughGroupsException | NotEnoughSprintsException | DuplicatedEntityException
-						| NullTopicException | EntityNotExistException | NotEnoughBussinesValueException
-						| IlegalPriorityValueException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				
+					TsscGame prov= new TsscGame();
+					prov.setId(gameId);
+					tsscStory.setTsscGame(prov);
+					storyDelegate.save(tsscStory);
+				
 			}
 			
 			
@@ -82,11 +83,11 @@ public class StoryController {
 	
 	@GetMapping("/stories/edit/{id}")
 	public String editStory(@PathVariable("id")long id,Model model) {
-		Optional<TsscStory> story=storyService.findById(id);
+		TsscStory story=storyDelegate.findById(id);
 		if(story==null)
 			throw new IllegalArgumentException("Invalid story Id:" + id);
 		
-		model.addAttribute("tsscStory",story.get());
+		model.addAttribute("tsscStory",story);
 		return "/stories/edit-story";
 	}
 	
@@ -98,13 +99,10 @@ public class StoryController {
 			if(bindingResult.hasErrors()) {
 				return "/stories/edit-story";
 			}else {
-				try {
-					storyService.updateStoryWiouhtGame(tsscStory);
-				} catch (EntityNotExistException | NotEnoughGroupsException | NotEnoughSprintsException
-						| NullTopicException | NotEnoughBussinesValueException | IlegalPriorityValueException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				
+					storyDelegate.update(tsscStory);
+					//storyService.updateStoryWiouhtGame(tsscStory);
+				
 			}
 			
 		}

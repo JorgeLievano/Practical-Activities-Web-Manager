@@ -36,11 +36,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
 
-		httpSecurity.formLogin().loginPage("/login").permitAll().and().
+		httpSecurity.csrf().disable().formLogin().loginPage("/login").permitAll().and().
 		authorizeRequests()
 		.antMatchers("/login").permitAll()
 		//.antMatchers("/","index").access("hasRole('admin') or hasRole('superadmin')")
 		.antMatchers("/topics/add","/topics/edit/**").access("hasRole('superadmin')")
+		.antMatchers("/api/**").permitAll()
 		.anyRequest().authenticated()
 		.and().httpBasic()
 		.and().logout()

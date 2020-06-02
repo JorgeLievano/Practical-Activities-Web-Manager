@@ -1,47 +1,44 @@
 package com.lievano.cc.controller;
 
-import java.util.Optional;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.lievano.cc.exceptions.DuplicatedEntityException;
-import com.lievano.cc.exceptions.EntityNotExistException;
-import com.lievano.cc.exceptions.NotEnoughGroupsException;
-import com.lievano.cc.exceptions.NotEnoughSprintsException;
-import com.lievano.cc.exceptions.NullTopicException;
+import com.lievano.cc.delegate.GameDelegate;
+import com.lievano.cc.delegate.TopicDelagate;
+
 import com.lievano.cc.model.TsscGame;
 import com.lievano.cc.model.TsscGameValidateBasic;
 import com.lievano.cc.model.TsscGameValidateComp;
 import com.lievano.cc.model.TsscGameValidateEdit;
 import com.lievano.cc.model.TsscGameValidateTopic;
 import com.lievano.cc.service.GameService;
-import com.lievano.cc.service.TopicService;
 
 @Controller
 public class GameController {
 
-	private GameService gameService;
-	private TopicService topicService;
+	//private GameService gameService;
+	private TopicDelagate topicDelegate;
+	private GameDelegate gameDelegate;
 	
 	@Autowired
-	public GameController(GameService gameService,TopicService topicService) {
-		// TODO Auto-generated constructor stub
-		this.gameService=gameService;
-		this.topicService=topicService;
+	public GameController(GameService gameService,TopicDelagate topicDelegate,GameDelegate gameDelegate) {
+		///this.gameService=gameService;
+		this.topicDelegate=topicDelegate;
+		this.gameDelegate=gameDelegate;
 	}
 	
 	@GetMapping("/games/")
 	public String indexGames(Model model) {
-		model.addAttribute("games",gameService.findAll());
+		model.addAttribute("games",gameDelegate.findAll());
 		return("games/index");
 	}
 	
@@ -59,23 +56,20 @@ public class GameController {
 			if(bindingResult.hasErrors()) {
 				return"/games/add-game";
 			}else {
-				try {
 					tsscGame.setNGroups(4);
 					tsscGame.setNSprints(4);
+					tsscGame=gameDelegate.save(tsscGame);
 					
-					gameService.saveGame(tsscGame);
-					
-				} catch (NotEnoughGroupsException | NotEnoughSprintsException | DuplicatedEntityException
-						| NullTopicException | EntityNotExistException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 				
 				//model.addAttribute("game",tsscGame);
+					//model.addAttribute("gameid",tsscGame.getId());
+					model.addAttribute("tsscGame",tsscGame);
 				if(action.equals("usar tema")) {
-					model.addAttribute("topics",topicService.findAll());
+					model.addAttribute("topics",topicDelegate.findAll());
 					return"/games/add-game-topic";
 				}else if(action.equals("No usar tema")) {
+					
+					
 					return"/games/add-game-comp";
 				}	
 			}	
@@ -90,16 +84,12 @@ public class GameController {
 			if(bindingResult.hasErrors()) {
 				return"/games/add-game-comp";
 			}else {
-				try {
-					TsscGame gameParc= gameService.findById(tsscGame.getId()).get();
+				
+					TsscGame gameParc= gameDelegate.findById(tsscGame.getId());
 					gameParc.setNGroups(tsscGame.getNGroups());
 					gameParc.setNSprints(tsscGame.getNSprints());
-					gameService.saveGame(gameParc);
-				} catch (NotEnoughGroupsException | NotEnoughSprintsException | DuplicatedEntityException
-						| NullTopicException | EntityNotExistException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+					gameDelegate.update(gameParc);
+				
 			}
 		}
 		return "redirect:/games/";
@@ -110,16 +100,13 @@ public class GameController {
 		if(!action.equals("Cancel")) {
 			
 			if(bindingResult.hasErrors()) {
-				model.addAttribute("topics",topicService.findAll());
+				model.addAttribute("topics",topicDelegate.findAll());
 				return"/games/add-game-topic";
 			}else {
-				TsscGame gameParc=gameService.findById(tsscGame.getId()).get();
-				try {
-					gameService.saveGame2(gameParc, tsscGame.getTsscTopic());
-				} catch (EntityNotExistException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				TsscGame gameParc=gameDelegate.findById(tsscGame.getId());
+				gameParc.setTsscTopic(tsscGame.getTsscTopic());
+				gameDelegate.save(gameParc);
+				
 			}
 			
 		}
@@ -129,11 +116,11 @@ public class GameController {
 	
 	@GetMapping("/games/edit/{id}")
 	public String editGame(@PathVariable("id")long id,Model model) {
-		Optional<TsscGame> tsscGame=gameService.findById(id);
+		TsscGame tsscGame=gameDelegate.findById(id);
 		if (tsscGame == null)
 			throw new IllegalArgumentException("Invalid game Id:" + id);
 		
-		model.addAttribute("tsscGame",tsscGame.get());
+		model.addAttribute("tsscGame",tsscGame);
 		return"/games/edit-game";
 	}
 
@@ -145,13 +132,7 @@ public class GameController {
 				return"/games/edit-game";
 			}else {
 				
-				try {
-					gameService.updateGame(tsscGame);
-				} catch (EntityNotExistException | NotEnoughGroupsException | NotEnoughSprintsException
-						| NullTopicException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+					gameDelegate.update(tsscGame);
 				
 			}
 			

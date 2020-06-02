@@ -10,6 +10,7 @@ public interface GameDao {
 
 	void save(TsscGame game);
 	void update(TsscGame game);
+	void delete(TsscGame game);
 	
 	
 	List<TsscGame> findByName(String name);

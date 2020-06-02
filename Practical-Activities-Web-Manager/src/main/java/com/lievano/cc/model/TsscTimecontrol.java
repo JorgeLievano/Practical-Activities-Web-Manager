@@ -2,6 +2,10 @@ package com.lievano.cc.model;
 
 import java.io.Serializable;
 import javax.persistence.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.List;
@@ -21,25 +25,33 @@ public class TsscTimecontrol implements Serializable {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TSSC_TIMECONTROL_ID_GENERATOR")
 	private long id;
 
+	@NotBlank(message = "debe indicar si auto inicia o no")
 	private String autostart;
 
+	@Min(value = 1,message = "No puede tener un intervalo menor a 1")
 	@Column(name = "INTERVAL_RUNNING")
 	private BigDecimal intervalRunning;
 
+	@NotNull(message = "seleccione una hora")
 	@Column(name = "LAST_PLAY_TIME")
 	private LocalTime lastPlayTime;
 
+	@NotBlank(message = "Ingrese un nombre al cronocometro")
 	private String name;
 
+	@Min(message = "El orden no puede ser inferior a 1",value = 1)
 	@Column(name = "TC_ORDER")
 	private BigDecimal order;
 
+	@NotBlank(message = "Especifique un estado")
 	@Column(name = "TC_STATE")
 	private String state;
 
+	@Min(message = "El intervalo debe ser superior a 0",value = 1)
 	@Column(name = "TIME_INTERVAL")
 	private BigDecimal timeInterval;
 
+	@NotBlank(message = "indique un tipo")
 	@Column(name = "TC_TYPE")
 	private String type;
 
