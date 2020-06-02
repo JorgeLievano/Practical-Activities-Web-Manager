@@ -31,6 +31,10 @@
 				<div sec:authorize="hasRole('admin') or hasRole('superadmin')">
 					<p><a href="/stories/"><i class="fas fa-puzzle-piece ml-2"></i> Historias</a></p>
 				</div>
+				<div sec:authorize= "hasRole('admin') or hasRole('superadmin')">
+					<p><a href="/timecontrols/"><i class="fas fa-clock ml-2"></i> Cronometros </a>   </p>
+				</div>
+				
 				
 				<p><a href="/logout"><i class="fas fa-user-times ml-2"></i> Logout</a></p>
 			</div>

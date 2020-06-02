@@ -84,4 +84,10 @@ public class GameDaoImp implements GameDao  {
 	public boolean existsById(long id) {
 		return findById(id)!=null?true:false;
 	}
+
+	@Override
+	public void delete(TsscGame game) {
+		entityManager.remove(entityManager.contains(game)?game:entityManager.merge(game));
+		
+	}
 }

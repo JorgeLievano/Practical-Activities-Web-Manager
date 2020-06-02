@@ -39,7 +39,13 @@ public class TimeControlDaoImp implements TimeControlDao {
 
 	@Override
 	public List<TsscTimecontrol> findAll() {
-		String s= "SELECT t FROM TsscTimeControl t";
+		String s= "SELECT t FROM TsscTimecontrol t";
+		return entityManager.createQuery(s).getResultList();
+	}
+
+	@Override
+	public List<TsscTimecontrol> findByGameId(long gameid) {
+		String s="SELECT t FROM TsscTimecontrol t WHERE t.tsscGame.id = '"+gameid+"'";
 		return entityManager.createQuery(s).getResultList();
 	}
 	

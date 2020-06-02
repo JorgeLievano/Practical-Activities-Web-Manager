@@ -11,4 +11,5 @@ public interface TimeControlDao {
 	void delete(TsscTimecontrol timeControl);
 	TsscTimecontrol findById(long id);
 	List<TsscTimecontrol> findAll();
+	List<TsscTimecontrol> findByGameId(long gameid);
 }

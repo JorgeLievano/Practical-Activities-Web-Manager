@@ -88,8 +88,9 @@ public class GameServiceImp implements GameService{
 			result.setNGroups((int) topic.getDefaultGroups());
 			result.setNSprints((int)topic.getDefaultSprints() );
 			
-			for(TsscStory story: topic.getTsscStories()) {
-				
+			if(topic.getTsscStories()!=null) {
+				for(TsscStory story: topic.getTsscStories()) {
+					
 					TsscStory copySto= cloneStory(story);
 					
 					//copySto=storyRepository.save(copySto);
@@ -97,7 +98,10 @@ public class GameServiceImp implements GameService{
 					storyDao.save(copySto);
 					result.addTsscStory(copySto);
 				
+				}
 			}
+			gameDao.delete(result);
+			result.setId(0);
 			gameDao.save(result);
 			result=gameDao.findByName(result.getName()).get(0);
 		}

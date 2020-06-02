@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.lievano.cc.delegate.TopicDelagate;
 import com.lievano.cc.exceptions.DuplicatedEntityException;
 import com.lievano.cc.exceptions.EntityNotExistException;
 import com.lievano.cc.exceptions.NotEnoughGroupsException;
@@ -24,16 +25,19 @@ import com.lievano.cc.service.TopicService;
 @Controller
 public class TopicController {
 
-	private TopicService topicService;
+	//private TopicService topicService;
+	private TopicDelagate topicDelegate;
+	
 	
 	@Autowired
-	public TopicController(TopicService topicService) {
-		this.topicService=topicService;
+	public TopicController(TopicService topicService,TopicDelagate topicDelegate) {
+		this.topicDelegate= topicDelegate;
+		//this.topicService=topicService;
 	}
 	
 	@GetMapping("/topics/")
 	public String indexTopics(Model model) {
-		model.addAttribute("topics", topicService.findAll());
+		model.addAttribute("topics", topicDelegate.findAll());
 		return "topics/index";
 	}
 	
@@ -50,25 +54,7 @@ public class TopicController {
 			if(bindingResult.hasErrors()) {
 				return "topics/add-topic";
 			}else {
-				try {
-					topicService.saveTopic(tsscTopic);
-				} catch (NotEnoughGroupsException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					bindingResult.addError(new FieldError("tsscTopic", "defaultGroups", "El número de grupos debe ser mayor a 0"));
-					return "topics/add-topic";
-				} catch (NotEnoughSprintsException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					bindingResult.addError(new FieldError("tsscTopic", "defaultSprints", "El número de sprints debe ser mayor a 0"));
-					return "topics/add-topic";
-				} catch (NullTopicException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (DuplicatedEntityException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} 
+						topicDelegate.add(tsscTopic);
 			}
 		}
 		return "redirect:/topics/";
@@ -76,11 +62,11 @@ public class TopicController {
 	
 	@GetMapping("/topics/edit/{id}")
 	public String editTopic(@PathVariable("id") long id,Model model) {
-		Optional<TsscTopic> topic= topicService.findById(id);
+		TsscTopic topic= topicDelegate.findById(id);
 		if (topic == null)
 			throw new IllegalArgumentException("Invalid topic Id:" + id);
 		
-		model.addAttribute("tsscTopic",topic.get());
+		model.addAttribute("tsscTopic",topic);
 		return"/topics/edit-topic";
 	}
 	
@@ -91,27 +77,7 @@ public class TopicController {
 			if(bindingResult.hasErrors()) {
 				return "topics/edit-topic";
 			}else {
-				try {
-					topicService.updateTopic(tsscTopic);
-				} catch (NotEnoughGroupsException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					bindingResult.addError(new FieldError("tsscTopic", "defaultGroups", "El número de grupos debe ser mayor a 0"));
-					return "topics/edit-topic";
-				} catch (NotEnoughSprintsException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					bindingResult.addError(new FieldError("tsscTopic", "defaultSprints", "El número de sprints debe ser mayor a 0"));
-					return "topics/edit-topic";
-				} catch (NullTopicException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (EntityNotExistException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} 
-				
-				
+					topicDelegate.update(tsscTopic);
 			}
 		}
 		return "redirect:/topics/";
