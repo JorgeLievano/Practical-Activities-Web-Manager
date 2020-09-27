@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.LievanoJorge.cc</groupId>
-	<artifactId>Taller-3-Lievano-Jorge</artifactId>
+	<artifactId>Practical-Activities-Web-Manager</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Taller-3-Lievano-Jorge</name>
 	<description>Final workshop Internet computing</description>

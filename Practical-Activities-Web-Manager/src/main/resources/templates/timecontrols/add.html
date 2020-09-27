@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge,chrome=1">
+<title>Agregar Cronometro</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet"
+	href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+	integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+	crossorigin="anonymous">
+<link rel="stylesheet"
+	href="https://use.fontawesome.com/releases/v5.4.1/css/all.css"
+	integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz"
+	crossorigin="anonymous">
+<link rel="stylesheet" href="../css/shards.min.css">
+</head>
+<body>
+<div class="container my-5">
+		<h2 class="mb-5">Nuevo Cronometro</h2>
+		<div class="row">
+			<div class="col-md-6">
+				<form action="#" th:action="@{/timecontrols/add}" th:object="${tsscTimecontrol}"
+					method="post">
+					<div class="row">
+						<div class="form-group col-md-6">
+							<label for="name" class="col-form-label">Nombre</label> <input
+								type="text" th:field="*{name}" class="form-control" id="name"
+								placeholder="Name"><span th:if="${#fields.hasErrors('name')}"
+th:errors="*{name}" class="text-danger"></span>		
+						</div>
+						
+						<div class="form-group col-md-6">
+							<label for="autostart" class="col-form-label">Auto Start</label> <input
+								type="text" th:field="*{autostart}" class="form-control" id="autostart"
+								placeholder="yes"><span th:if="${#fields.hasErrors('autostart')}"
+th:errors="*{autostart}" class="text-danger"></span>		
+						</div>
+						
+						<div class="form-group col-md-6">
+							<label for="state" class="col-form-label">Estado</label> <input
+								type="text" th:field="*{state}" class="form-control" id="state"
+								placeholder="Stoped"><span th:if="${#fields.hasErrors('state')}"
+th:errors="*{state}" class="text-danger"></span>		
+						</div>
+						
+						<div class="form-group col-md-6">
+							<label for="type" class="col-form-label">Tipo</label> <input
+								type="text" th:field="*{type}" class="form-control" id="type"
+								placeholder=""><span th:if="${#fields.hasErrors('type')}"
+th:errors="*{type}" class="text-danger"></span>		
+						</div>
+						
+						<div class="form-group col-md-6">
+							<label for="intervalRunning" class="col-form-label">Intervalo de uso</label> <input
+								type="number" th:field="*{intervalRunning}" class="form-control" id="intervalRunning"
+								placeholder="1"><span th:if="${#fields.hasErrors('intervalRunning')}"
+th:errors="*{intervalRunning}" class="text-danger"></span>		
+						</div>
+						
+						<div class="form-group col-md-6">
+							<label for="order" class="col-form-label">Orden</label> <input
+								type="number" th:field="*{order}" class="form-control" id="order"
+								placeholder="1"><span th:if="${#fields.hasErrors('order')}"
+th:errors="*{order}" class="text-danger"></span>		
+						</div>
+						
+						<div class="form-group col-md-6">
+							<label for="timeInterval" class="col-form-label">Intervalo de Tiempo</label> <input
+								type="number" th:field="*{timeInterval}" class="form-control" id="timeInterval"
+								placeholder="1"><span th:if="${#fields.hasErrors('timeInterval')}"
+th:errors="*{timeInterval}" class="text-danger"></span>		
+						</div>
+						
+						<div class="form-group col-md-6">
+							<label for="tsscGame" class="col-form-label">Juego</label> <select
+								th:field="*{tsscGame}">
+								<option th:value="0" th:selected="${tsscTimecontrol.tsscGame=null}" selected></option>
+								<option th:each="game : ${games}" th:value="${game.id}"
+									class="form-control" th:text="${game.name}"
+									th:selected="${tsscTimecontrol.tsscGame=game}"></option>
+							</select> <span th:if="${#fields.hasErrors('tsscGame')}"
+								th:errors="*{tsscGame}" class="text-danger"></span>
+						</div>
+						
+						<div class="form-group col-md-6">
+							<label for="lastPlayTime" class="col-form-label">Ultimo Uso</label> <input
+								type="time" th:field="*{lastPlayTime}" class="form-control" id="lastPlayTime"
+								placeholder="9">
+								<span th:if="${#fields.hasErrors('lastPlayTime')}" th:errors="*{lastPlayTime}"
+								class="text-danger"></span>
+						</div>
+						
+					</div>
+					
+					<div class="row">
+						<div class="col-md-4 mt-3">
+							<input type="submit" name="action" class="btn btn-success" value="Agregar">
+						</div>
+						
+						<div class="col-md-3 mt-3">
+							<input type="submit" name="action" class="btn btn-secondary" value="Cancel">
+						</div>
+						
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+
+
+</body>
+</html>
